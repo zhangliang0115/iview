@@ -5,7 +5,7 @@
         </colgroup>
         <thead>
             <tr>
-                <th v-for="(column, index) in columns" :class="alignCls(column)">
+                <th v-for="(column, index) in columns" :class="headerAlignCls(column)">
                     <div :class="cellClasses(column)">
                         <template v-if="column.type === 'expand'"></template>
                         <template v-else-if="column.type === 'selection'"><Checkbox :value="isSelectAll" @on-change="selectAll"></Checkbox></template>
