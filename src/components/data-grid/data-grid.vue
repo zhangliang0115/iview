@@ -1,10 +1,10 @@
 <template>
-    <Table :size="size" ref="table" :height="height" :url="url" :border="border" :columns="columns"
+    <Table :class="wrapClasses" :size="size" ref="table" :height="height" :url="url" :border="border" :columns="columns"
            :pagination="pagination" :queryParams="queryParams">
         <div slot="header" v-if="(!!searchFields && searchFields.length>0) || (buttons && buttons.length>0)">
             <Row>
                 <i-col :span="buttonSpan">
-                    <i-button v-for="(button, index) in buttons" :type="button.type" @click="buttonEvent(button.click,$event)">{{button.text}}</i-button>
+                    <i-button v-for="(button, index) in buttons" :type="button.type" @click="buttonEvent(button,$event)">{{button.text}}</i-button>
                 </i-col>
                 <i-col v-if="searchFields.length>0" :span="searchSpan">
                     <Row type="flex" justify="end">
@@ -29,6 +29,9 @@
 <script>
     import Table from '../table';
     import ICol from '../grid/col';
+    import { getParameterNames } from '../../utils/assist';
+    const prefixCls = 'ivu-datagrid';
+
     export default {
         components: {
             ICol,
@@ -50,7 +53,7 @@
             },
             border: {
                 type: Boolean,
-                default: false
+                default: true
             }
             , pagination: {
                 type: Boolean,
@@ -82,6 +85,9 @@
             };
         },
         computed: {
+            wrapClasses:function () {
+                return [`${prefixCls}-wrapper`]
+            },
             searchSpan:function(){
                 return 24-this.buttonSpan;
             },
@@ -109,12 +115,38 @@
             }
         },
         methods: {
-            buttonEvent: function (click,e) {
+            buttonEvent: function (button,e) {
+                var objs={
+                    button:button,
+                    table:this.$refs['table'],
+                    event:e
+                };
+                var click=button.click;
+                var fun={};
                 if (typeof click == 'function') {
-                    click(this.$refs['table'],e);
+                    fun=click;
                 } else if (typeof click == 'string') {
-                    this.$parent[click](this.$refs['table'],e);
+                    fun=this.$parent[click];
                 }
+                if(typeof fun == 'function'){
+                    var params=getParameterNames(fun);
+                    var ps=[];
+                    if(!!params && params.length>0){
+                        if(params.length==1 && params[0].length==1){
+                            ps.push(objs.table);
+                            ps.push(objs.button)
+                            ps.push(objs.event);
+                        }else{
+                            for(var i in params){
+                                ps.push(objs[params[i].toLowerCase()]);
+                            }
+                        }
+                        fun.apply(this.$parent,ps);
+                    }else{
+                        fun.apply(this.$parent);
+                    }
+                }
+
             },
             handleSubmit(){
                 var keyName='like_' +this.dataKey;
