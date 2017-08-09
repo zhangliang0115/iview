@@ -23,16 +23,22 @@
                     :obj-data="objData"></table-body>
             </div>
             <div
-                :class="[prefixCls + '-tip']"
-                v-show="((!!localeNoDataText && (!data || data.length === 0)) || (!!localeNoFilteredDataText && (!rebuildData || rebuildData.length === 0)))">
-                <table cellspacing="0" cellpadding="0" border="0">
+                    :class="[prefixCls + '-tip']"
+                    v-show="showMask ||((!!localeNoDataText && (!data || data.length === 0)) || (!!localeNoFilteredDataText && (!rebuildData || rebuildData.length === 0)))">
+                <div v-show="showMask" class="ivu-spin ivu-spin-fix ivu-spin-show-text mask"></div>
+                <Spin fix v-show="showMask" >
+                    <Icon type="load-b" size=18 class="demo-spin-icon-load"></Icon>
+                    <div>Loading...</div>
+                </Spin>
+                <table cellspacing="0" cellpadding="0" border="0" v-show="!showMask||isFirstLoadReMoteData">
                     <tbody>
-                        <tr>
-                            <td :style="{ 'height': bodyStyle.height }">
-                                <span v-html="localeNoDataText" v-if="!data || data.length === 0"></span>
-                                <span v-html="localeNoFilteredDataText" v-else></span>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td :style="{ 'height': bodyStyle.height }" >
+                            <span v-if="isFirstLoadReMoteData"></span>
+                            <span v-html="localeNoDataText" v-else-if="!data || data.length === 0"></span>
+                            <span v-html="localeNoFilteredDataText" v-else></span>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -80,9 +86,17 @@
                         :obj-data="objData"></table-body>
                 </div>
             </div>
-            <div :class="[prefixCls + '-footer']" v-if="showSlotFooter" ref="footer"><slot name="footer"></slot></div>
+            <div :class="[prefixCls + '-footer']" v-if="pagination" ref="footer">
+                <slot name="footer">
+                    <Page :total="total" :current="pageNumber" :page-size="pageSize" :page-size-opts="pageList" size="small" show-elevator show-sizer show-total placement="top"
+                          @on-change="onChangeCurrent" @on-page-size-change="onPageSizeChange"
+                    ></Page>
+                </slot>
+            </div>
+
         </div>
     </div>
+
 </template>
 <script>
     import tableHead from './table-head.vue';
@@ -92,6 +106,8 @@
     import Csv from '../../utils/csv';
     import ExportCsv from './export-csv';
     import Locale from '../../mixins/locale';
+    import axios from 'axios';
+    import _ from 'lodash';
 
     const prefixCls = 'ivu-table';
 
@@ -109,6 +125,7 @@
                     return [];
                 }
             },
+
             columns: {
                 type: Array,
                 default () {
@@ -124,7 +141,8 @@
                 type: [Number, String]
             },
             height: {
-                type: [Number, String]
+                type: [Number, String],
+                default:document.documentElement.clientHeight
             },
             stripe: {
                 type: Boolean,
@@ -160,6 +178,54 @@
             disabledHover: {
                 type: Boolean
             }
+            //新增功能参数
+            ,method:{
+                validator (value) {
+                    return oneOf(value, ['get', 'post']);
+                }
+            }
+            ,url:{
+                type: String
+
+            }
+            ,loadMsg:{
+                type: String
+            }
+            ,pagination:{
+                type: Boolean,
+                default:true
+            }
+            ,pageNumber:{
+                type: Number,
+                default:1
+            }
+            ,pageSize:{
+                type: Number,
+                default:15
+            }
+            ,pageList:{
+                type: Array,
+                default () {
+                    return [10,15,20,30,40,50];
+                }
+            }
+            ,queryParams:{
+                type: Object,
+                default:{}
+            }
+            ,rownumbers:{
+                type: Boolean,
+                default:true
+            },
+            rownumberWidth:{
+                type: Number,
+                default:60
+            }
+            ,checkbox:{
+                type: Boolean,
+                default:true
+            }
+            //新增功能参数
         },
         data () {
             return {
@@ -175,12 +241,18 @@
                 showSlotFooter: true,
                 bodyHeight: 0,
                 bodyRealHeight: 0,
+                isFirstLoadReMoteData:true,
+                showMask:true,
                 scrollBarWidth: getScrollBarSize(),
                 currentContext: this.context,
                 cloneData: deepCopy(this.data)    // when Cell has a button to delete row data, clickCurrentRow will throw an error, so clone a data
+                ,total:0
+                ,realPageSize:this.pageSize
+                ,realPageNumber:this.pageNumber
             };
         },
         computed: {
+
             localeNoDataText () {
                 if (this.noDataText === undefined) {
                     return this.t('i.table.noDataText');
@@ -321,9 +393,78 @@
             },
             isRightFixed () {
                 return this.columns.some(col => col.fixed && col.fixed === 'right');
+            },
+            changeData(){
+                return this.realPageSize+':'+this.realPageNumber;
             }
         },
         methods: {
+            onChangeCurrent(nowPage){
+                this.realPageNumber=nowPage;
+            },
+            onPageSizeChange(nowPageSize){
+                this.realPageSize=nowPageSize;
+            },
+            getRows(){
+                return this.data;
+            },
+            getChecked(){
+                var checked=[];
+                var datas=this.getSelection();
+                for(var i in datas){
+                    checked.push(datas[i].id);
+                }
+                return checked;
+            },
+            load: _.debounce(
+                function () {
+                    var vm = this;
+                    vm.showMask=true;
+                    var params=deepCopy(this.queryParams);
+                    if(this.pagination){
+                        if(vm.realPageNumber==vm.pageNumber && vm.realPageSize==vm.pageSize){
+                            params.page = 1;
+                            params.rows = vm.realPageSize;
+                        }else{
+                            params.page = vm.realPageNumber;
+                            params.rows = vm.realPageSize;
+                        }
+                    }
+                    axios.get(this.url,{
+                        params:params
+                    })
+                        .then(function (response) {
+                            var back=response.data;
+                            if(back.isOk){
+                                if(vm.pagination){
+                                    vm.data=back.data.rows;
+                                    vm.total=back.data.total;
+                                    vm.pageSize=back.data.size;
+                                    vm.pageNumber=back.data.page;
+                                }else{
+                                    vm.data=back.data;
+                                }
+                            }else if(back.isFail){
+                                vm.$Notice.error({
+                                    title: '操作失败',
+                                    desc: back.msg||''
+                                });
+                            }
+                            vm.isFirstLoadReMoteData=false;
+                            vm.showMask=false;
+                        })
+                        .catch(function (error) {
+                            vm.$Notice.error({
+                                title: '操作失败',
+                                desc:error
+                            });
+                            vm.isFirstLoadReMoteData=false;
+                            vm.showMask=false;
+                        });
+                },
+                // 这是我们为用户停止输入等待的毫秒数
+                100
+            ),
             rowClsName (index) {
                 return this.rowClassName(this.data[index], index);
             },
@@ -637,6 +778,21 @@
             },
             makeColumns () {
                 let columns = deepCopy(this.columns);
+                if(this.checkbox){
+                    columns=[{
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+                    }].concat(columns);
+                }
+                if(this.rownumbers){
+                    columns=[{
+                        type: 'index',
+                        width: this.rownumberWidth,
+                        align: 'center'
+                    }].concat(columns);
+                }
+
                 let left = [];
                 let right = [];
                 let center = [];
@@ -702,6 +858,7 @@
             }
         },
         created () {
+            this.load();
             if (!this.context) this.currentContext = this.$parent;
             this.showSlotHeader = this.$slots.header !== undefined;
             this.showSlotFooter = this.$slots.footer !== undefined;
@@ -725,6 +882,11 @@
             off(window, 'resize', this.handleResize);
         },
         watch: {
+            changeData(){
+                if(this.pagination){
+                    this.load();
+                }
+            },
             data: {
                 handler () {
                     const oldDataLen = this.rebuildData.length;

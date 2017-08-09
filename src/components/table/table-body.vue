@@ -20,7 +20,7 @@
                             :row="row"
                             :key="column._columnKey"
                             :column="column"
-                            :natural-index="index"
+                            :natural-index="index+baseNumber"
                             :index="row._index"
                             :checked="rowChecked(row._index)"
                             :disabled="rowDisabled(row._index)"
@@ -61,6 +61,15 @@
             }
         },
         computed: {
+            baseNumber(){
+                var parent=this.$parent;
+                if(parent.pagination){
+                    var pageNumber=parent.pageNumber;
+                    var pageSize=parent.pageSize;
+                    return (pageNumber-1)*pageSize;
+                }
+                return 0;
+            },
             expandRender () {
                 let render = function () {
                     return '';

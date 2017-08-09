@@ -46,6 +46,8 @@ import { Row, Col } from './components/grid';
 import { Select, Option, OptionGroup } from './components/select';
 import locale from './locale';
 
+import DataGrid from './components/data-grid';
+
 const iview = {
     Affix,
     Alert,
@@ -117,7 +119,8 @@ const iview = {
     Tooltip,
     Transfer,
     Tree,
-    Upload
+    Upload,
+    DataGrid
 };
 
 const install = function (Vue, opts = {}) {

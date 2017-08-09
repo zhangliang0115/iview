@@ -298,3 +298,21 @@ export function removeClass(el, cls) {
         el.className = trim(curClass);
     }
 }
+
+export function getParameterNames (fn) {
+    if(typeof fn !== 'function') return [];
+    var COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+    var code = fn.toString().replace(COMMENTS, '');
+    var result = code.slice(code.indexOf('(') + 1, code.indexOf(')'))
+        .match(/([^\s,]+)/g);
+    return result === null
+        ? []
+        : result;
+}
+
+export function isEmptyObject (e) {
+    var t;
+    for (t in e)
+        return !1;
+    return !0;
+}
