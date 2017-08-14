@@ -1,28 +1,23 @@
 <template>
-    <Table :class="wrapClasses" :size="size" ref="table" :height="height" :url="url" :border="border" :columns="columns"
-           :pagination="pagination" :queryParams="queryParams">
+    <Table   :class="wrapClasses" :size="size" ref="dataGrid" :height="height" :url="url" :border="border" :columns="columns"
+             :pagination="pagination" :queryParams="queryParams"
+             @on-selection-change="onSelectionChange"
+             @on-load-success="onLoadSuccess"
+    >
         <div slot="header" v-if="(!!searchFields && searchFields.length>0) || (buttons && buttons.length>0)">
-            <Row>
-                <i-col :span="buttonSpan">
-                    <i-button v-for="(button, index) in buttons" :type="button.type" @click="buttonEvent(button,$event)">{{button.text}}</i-button>
-                </i-col>
-                <i-col v-if="searchFields.length>0" :span="searchSpan">
-                    <Row type="flex" justify="end">
-                        <i-col>
-                            <i-form class="search-form">
-                                <Form-item>
-                                    <i-input v-model="dataValue" @on-enter="handleSubmit('table')" style="width:250px;">
-                                        <Select v-model="dataKey" slot="prepend" style="width: 80px">
-                                            <Option v-for="field in searchFields" :value="field.key">{{field.title}}</Option>
-                                        </Select>
-                                        <Button slot="append" icon="ios-search" @click="handleSubmit('table')"></Button>
-                                    </i-input>
-                                </Form-item>
-                            </i-form>
-                        </i-col>
-                    </Row>
-                </i-col>
-            </Row>
+            <i-form class="search-form" inline>
+                <Form-item>
+                    <i-button v-for="(button, index) in buttons" :icon="button.icon" :type="button.type" :disabled="!!button.disabled" @click="buttonEvent(button,$event)">{{button.text}}</i-button>
+                </Form-item>
+                <Form-item>
+                    <i-input v-model="dataValue" @on-enter="handleSubmit('table')" style="width:250px;">
+                        <Select v-model="dataKey" slot="prepend" style="width: 80px">
+                            <Option v-for="field in searchFields" :value="field.key">{{field.title}}</Option>
+                        </Select>
+                        <Button slot="append" icon="ios-search" @click="handleSubmit('table')"></Button>
+                    </i-input>
+                </Form-item>
+            </i-form>
         </div>
     </Table>
 </template>
@@ -86,10 +81,7 @@
         },
         computed: {
             wrapClasses:function () {
-                return [`${prefixCls}-wrapper`]
-            },
-            searchSpan:function(){
-                return 24-this.buttonSpan;
+                return [`${prefixCls}-wrapper`];
             },
             searchFields:function () {
                 var fields=[];
@@ -115,10 +107,19 @@
             }
         },
         methods: {
+            onSelectionChange:function(selection){
+                this.$emit('on-selection-change', selection);
+            },
+            onLoadSuccess:function(data){
+                this.$emit('on-load-success', data);
+            },
+            rows:function(){
+                return this.$refs['dataGrid'].data;
+            },
             buttonEvent: function (button,e) {
                 var objs={
                     button:button,
-                    table:this.$refs['table'],
+                    datagrid:this.$refs['dataGrid'],
                     event:e
                 };
                 var click=button.click;
@@ -133,7 +134,7 @@
                     var ps=[];
                     if(!!params && params.length>0){
                         if(params.length==1 && params[0].length==1){
-                            ps.push(objs.table);
+                            ps.push(objs.datagrid);
                             ps.push(objs.button)
                             ps.push(objs.event);
                         }else{
@@ -154,7 +155,7 @@
                     delete this.queryParams['like_'+this.searchFields[i]];
                 }
                 this.queryParams[keyName]=this.dataValue;
-                this.$refs['table'].load();
+                this.$refs['dataGrid'].load();
             }
         }
     };

@@ -170,7 +170,7 @@ Modal.newInstance = properties => {
             },
             destroy () {
                 this.$destroy();
-                document.body.removeChild(this.$el);
+                try{document.body.removeChild(this.$el);}catch(e){e=='';};
                 this.onRemove();
             },
             onOk () {},

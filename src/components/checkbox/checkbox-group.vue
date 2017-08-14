@@ -1,12 +1,19 @@
 <template>
     <div :class="classes">
-        <slot></slot>
+        <slot>
+            <Checkbox :label="r[idField||'id']" v-for="r in data">
+                <Icon v-if="r.icon" :type="r.icon"></Icon>
+                <span>{{r[textField||'name']}}</span>
+            </Checkbox>
+        </slot>
     </div>
 </template>
 <script>
     import { findComponentsDownward } from '../../utils/assist';
     import Emitter from '../../mixins/emitter';
+    import $ from 'jquery';
     const prefixCls = 'ivu-checkbox-group';
+
 
     export default {
         name: 'CheckboxGroup',
@@ -18,10 +25,25 @@
                     return [];
                 }
             }
+            ,url:{
+                type:String
+            }
+            ,idField:{
+                type:String
+            }
+            ,textField:{
+                type:String
+            }
+        },
+        created(){
+            if(this.$slots.default===undefined){
+                this.load();
+            }
         },
         data () {
             return {
                 currentValue: this.value,
+                data:[],
                 childrens: []
             };
         },
@@ -34,6 +56,20 @@
             this.updateModel(true);
         },
         methods: {
+            load:function () {
+                if(this.url){
+                    var vm = this;
+                    $.ajax({
+                        url:vm.url,
+                        success:function(rs){
+                            if(rs.data){
+                                vm.data=rs.data;
+                                vm.$emit('on-load-success', vm.data);
+                            }
+                        }
+                    });
+                }
+            },
             updateModel (update) {
                 const value = this.value;
                 this.childrens = findComponentsDownward(this, 'Checkbox');

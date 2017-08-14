@@ -186,7 +186,6 @@
             }
             ,url:{
                 type: String
-
             }
             ,loadMsg:{
                 type: String
@@ -432,6 +431,7 @@
                     }
                     axios.get(this.url,{
                         params:params
+//                        ,headers: {'X-Requested-With': 'XMLHttpRequest'}
                     })
                         .then(function (response) {
                             var back=response.data;
@@ -444,6 +444,7 @@
                                 }else{
                                     vm.data=back.data;
                                 }
+                                this.$emit('on-load-success', vm.data);
                             }else if(back.isFail){
                                 vm.$Notice.error({
                                     title: '操作失败',

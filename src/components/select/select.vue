@@ -33,7 +33,11 @@
                 :data-transfer="transfer"
                 v-transfer-dom>
                 <ul v-show="notFountShow" :class="[prefixCls + '-not-found']"><li>{{ localeNotFoundText }}</li></ul>
-                <ul v-show="(!notFound && !remote) || (remote && !loading && !notFound)" :class="[prefixCls + '-dropdown-list']"><slot></slot></ul>
+                <ul v-show="(!notFound && !remote) || (remote && !loading && !notFound)" :class="[prefixCls + '-dropdown-list']">
+                    <slot>
+                        <Option v-for="d in data" :value="d[idField||'id']">{{d[textField||'name']}}</Option>
+                    </slot>
+                </ul>
                 <ul v-show="loading" :class="[prefixCls + '-loading']">{{ localeLoadingText }}</ul>
             </Drop>
         </transition>
@@ -47,6 +51,7 @@
     import { oneOf, findComponentDownward } from '../../utils/assist';
     import Emitter from '../../mixins/emitter';
     import Locale from '../../mixins/locale';
+    import $ from 'jquery';
 
     const prefixCls = 'ivu-select';
 
@@ -123,12 +128,27 @@
                 type: Boolean,
                 default: false
             }
+            ,url:{
+                type:String
+            }
+            ,idField:{
+                type:String
+            }
+            ,textField:{
+                type:String
+            }
+        },
+        created(){
+            if(this.$slots.default===undefined){
+                this.load();
+            }
         },
         data () {
             return {
                 prefixCls: prefixCls,
                 visible: false,
                 options: [],
+                data:[],
                 optionInstances: [],
                 selectedSingle: '',    // label
                 selectedMultiple: [],
@@ -232,6 +252,20 @@
             }
         },
         methods: {
+            load:function () {
+                if(this.url){
+                    var vm = this;
+                    $.ajax({
+                        url:vm.url,
+                        success:function(rs){
+                            if(rs.data){
+                                vm.data=rs.data;
+                                vm.$emit('on-load-success', vm.data);
+                            }
+                        }
+                    });
+                }
+            },
             toggleMenu () {
                 if (this.disabled) {
                     return false;

@@ -1,11 +1,17 @@
 <template>
     <div :class="classes">
-        <slot></slot>
+        <slot>
+            <Radio :label="r[idField||'id']" v-for="r in data">
+                <Icon v-if="r.icon" :type="r.icon"></Icon>
+                <span>{{r[textField||'name']}}</span>
+            </Radio>
+        </slot>
     </div>
 </template>
 <script>
     import { oneOf, findComponentsDownward } from '../../utils/assist';
     import Emitter from '../../mixins/emitter';
+    import $ from 'jquery';
 
     const prefixCls = 'ivu-radio-group';
 
@@ -31,10 +37,25 @@
                 type: Boolean,
                 default: false
             }
+            ,url:{
+                type:String
+            }
+            ,idField:{
+                type:String
+            }
+            ,textField:{
+                type:String
+            }
+        },
+        created(){
+            if(this.$slots.default===undefined){
+               this.load();
+            }
         },
         data () {
             return {
                 currentValue: this.value,
+                data:[],
                 childrens: []
             };
         },
@@ -54,10 +75,23 @@
             this.updateValue();
         },
         methods: {
+            load:function () {
+                if(this.url){
+                    var vm = this;
+                    $.ajax({
+                        url:vm.url,
+                        success:function(rs){
+                            if(rs.data){
+                                vm.data=rs.data;
+                                vm.$emit('on-load-success', vm.data);
+                            }
+                        }
+                    });
+                }
+            },
             updateValue () {
                 const value = this.value;
                 this.childrens = findComponentsDownward(this, 'Radio');
-
                 if (this.childrens) {
                     this.childrens.forEach(child => {
                         child.currentValue = value == child.label;
