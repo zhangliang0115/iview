@@ -1,5 +1,5 @@
 {
-  "name": "iview",
+  "name": "iview-smart",
   "version": "2.0.0",
   "title": "iView",
   "description": "A high quality  UI components Library with Vue.js",
@@ -32,12 +32,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/iview/iview"
+    "url": "https://github.com/zhangliang0115/iview-smart"
   },
-  "author": "Aresn",
-  "license": "MIT",
+  "author": "zhangliang",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/iview/iview/issues"
+    "url": "https://github.com/zhangliang0115/iview-smart/issues"
   },
   "dependencies": {
     "async-validator": "^1.7.1",
@@ -106,5 +106,9 @@
   "engines": {
     "node": ">= 4.0.0",
     "npm": ">= 3.0.0"
+  },
+  "directories": {
+    "example": "examples",
+    "test": "test"
   }
 }

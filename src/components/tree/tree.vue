@@ -4,6 +4,7 @@
             v-for="item in data"
             :key="item.nodeKey"
             :data="item"
+            :textField="textField"
             visible
             :multiple="multiple"
             :show-checkbox="showCheckbox">
@@ -16,6 +17,7 @@
     import { findComponentsDownward } from '../../utils/assist';
     import Emitter from '../../mixins/emitter';
     import Locale from '../../mixins/locale';
+    import $ from 'jquery';
 
     const prefixCls = 'ivu-tree';
 
@@ -43,11 +45,21 @@
             emptyText: {
                 type: String
             }
+            , url: {
+                type: String
+            }
+            ,textField: {
+                type: String,
+                default: 'title'
+            }
         },
         data () {
             return {
                 prefixCls: prefixCls
             };
+        },
+        created(){
+            this.load();
         },
         computed: {
             localeEmptyText () {
@@ -59,6 +71,20 @@
             }
         },
         methods: {
+            load:function () {
+                if(this.url){
+                    var vm = this;
+                    $.ajax({
+                        url:vm.url,
+                        success:function(rs){
+                            if(rs.data){
+                                vm.data=rs.data;
+                                vm.$emit('on-load-success', vm.data);
+                            }
+                        }
+                    });
+                }
+            },
             getSelectedNodes () {
                 const nodes = findComponentsDownward(this, 'TreeNode');
                 return nodes.filter(node => node.data.selected).map(node => node.data);

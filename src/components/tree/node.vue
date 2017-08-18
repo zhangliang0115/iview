@@ -11,12 +11,13 @@
                         :indeterminate="indeterminate"
                         :disabled="data.disabled || data.disableCheckbox"
                         @click.native.prevent="handleCheck"></Checkbox>
-                <span :class="titleClasses" v-html="data.title" @click="handleSelect"></span>
+                <span :class="titleClasses" v-html="data[textField]" @click="handleSelect"></span>
                 <Tree-node
                         v-for="item in data.children"
                         :key="item.nodeKey"
                         :data="item"
                         :visible="data.expand"
+                        :textField="textField"
                         :multiple="multiple"
                         :show-checkbox="showCheckbox">
                 </Tree-node>
@@ -55,6 +56,10 @@
             visible: {
                 type: Boolean,
                 default: false
+            }
+            ,textField: {
+                type: String,
+                default: 'title'
             }
         },
         data () {

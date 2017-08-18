@@ -444,7 +444,7 @@
                                 }else{
                                     vm.data=back.data;
                                 }
-                                this.$emit('on-load-success', vm.data);
+                                vm.$emit('on-load-success', vm.data);
                             }else if(back.isFail){
                                 vm.$Notice.error({
                                     title: '操作失败',
