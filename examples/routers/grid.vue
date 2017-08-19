@@ -10,6 +10,7 @@
                 <div>col-8</div>
             </i-col>
         </Row>
+    </Row>
         <Button @click="add">add</Button>
     </div>
 </template>

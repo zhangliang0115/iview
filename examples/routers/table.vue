@@ -1,8 +1,8 @@
 <template>
     <div>
         <Table
-                width="500"
-                height="200"
+
+                height="400"
                 border
                 highlight-row
                 :columns="columns2"
@@ -23,7 +23,7 @@
 //                        align: 'center'
 //                    },
                     {
-                        title: '姓名姓名姓名姓名姓名姓名姓名姓名姓名姓名姓名姓名',
+                        title: '姓名',
                         key: 'name',
                         width: 200,
 //                        sortable: true,

@@ -1,7 +1,7 @@
 <template>
     <div :class="classes">
         <slot>
-            <Checkbox :label="r[idField||'id']" v-for="r in data">
+            <Checkbox :label="r[idField||'id']" v-for="r in data" :key="r[idField||'id']">
                 <Icon v-if="r.icon" :type="r.icon"></Icon>
                 <span>{{r[textField||'name']}}</span>
             </Checkbox>

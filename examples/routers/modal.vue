@@ -5,10 +5,31 @@
         <Modal v-model="showModal" title="弹窗">
             <Tabs>
                 <Tab-pane label="演示" style="height: 80px;">
+                    <Date-picker transfer type="daterange" placement="bottom-end" placeholder="选择日期" style="width: 200px"></Date-picker>
+                    <i-select transfer multiple v-model="m1">
+                        <i-option v-for="item in options" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+                    </i-select>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Button @click="edit">测试</Button>
+                </Tab-pane>
+                <Tab-pane label="演示1" style="height: 380px;overflow-y: auto; ">
                     <!--<Date-picker transfer type="daterange" placement="bottom-end" placeholder="选择日期" style="width: 200px"></Date-picker>-->
                     <!--<i-select transfer multiple v-model="m1">-->
-                        <!--<i-option v-for="item in options" :value="item.value" :key="item.value">{{ item.label }}</i-option>-->
+                    <!--<i-option v-for="item in options" :value="item.value" :key="item.value">{{ item.label }}</i-option>-->
                     <!--</i-select>-->
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
+                    <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
                     <Cascader transfer :data="data4" :load-data="loadData"></Cascader>
                 </Tab-pane>
             </Tabs>
@@ -70,6 +91,21 @@
             }
         },
         methods: {
+            edit(){
+                this.$Modal.info({
+                    title:"图片预览",
+                    render:(h)=>{
+                        return h('img',{
+                            attrs:{
+                                src:"https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=644906638,1264520040&fm=26&gp=0.jpg"
+                            },
+                            style:{
+                                width:'100%'
+                            }
+                        });
+                    }
+                });
+            },
             ok () {
                 this.$Message.info('点击了确定');
             },

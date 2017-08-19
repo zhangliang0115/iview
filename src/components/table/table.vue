@@ -210,7 +210,9 @@
             }
             ,queryParams:{
                 type: Object,
-                default:{}
+                default:function(){
+                    return {};
+                }
             }
             ,rownumbers:{
                 type: Boolean,
@@ -241,7 +243,7 @@
                 bodyHeight: 0,
                 bodyRealHeight: 0,
                 isFirstLoadReMoteData:true,
-                showMask:true,
+                showMask:false,
                 scrollBarWidth: getScrollBarSize(),
                 currentContext: this.context,
                 cloneData: deepCopy(this.data)    // when Cell has a button to delete row data, clickCurrentRow will throw an error, so clone a data
@@ -859,7 +861,10 @@
             }
         },
         created () {
-            this.load();
+            if(this.url){
+                this.showMask=true;
+                this.load();
+            }
             if (!this.context) this.currentContext = this.$parent;
             this.showSlotHeader = this.$slots.header !== undefined;
             this.showSlotFooter = this.$slots.footer !== undefined;

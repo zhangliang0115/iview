@@ -35,7 +35,7 @@
                 <ul v-show="notFountShow" :class="[prefixCls + '-not-found']"><li>{{ localeNotFoundText }}</li></ul>
                 <ul v-show="(!notFound && !remote) || (remote && !loading && !notFound)" :class="[prefixCls + '-dropdown-list']">
                     <slot>
-                        <Option v-for="d in data" :value="d[idField||'id']">{{d[textField||'name']}}</Option>
+                        <Option v-for="d in data" :value="d[idField||'id']" :key="d[idField||'id']">{{d[textField||'name']}}</Option>
                     </slot>
                 </ul>
                 <ul v-show="loading" :class="[prefixCls + '-loading']">{{ localeLoadingText }}</ul>
