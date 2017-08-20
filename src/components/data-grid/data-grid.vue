@@ -58,7 +58,9 @@
             }
             , queryParams: {
                 type: Object,
-                default: {}
+                default(){
+                    return {};
+                }
             }
             , height: {
                 type: [Number, String],
