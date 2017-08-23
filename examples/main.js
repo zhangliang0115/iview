@@ -8,11 +8,13 @@ import iView from '../src/index';
 // import locale from '../src/locale/lang/en-US';
 import locale from '../src/locale/lang/zh-CN';
 
+
+
 Vue.use(VueRouter);
 Vue.use(iView, { locale });
 
 // 开启debug模式
-Vue.config.debug = false;
+Vue.config.silent  = true;
 
 // 路由配置
 const router = new VueRouter({
@@ -180,6 +182,14 @@ const router = new VueRouter({
         {
             path: '/notice',
             component: require('./routers/notice.vue')
+        },
+        {
+            path: '/smart-table',
+            component: require('./routers/smart-table.vue')
+        },
+        {
+            path: '/umeditor',
+            component: require('./routers/ueditor.vue')
         }
     ]
 });

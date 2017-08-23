@@ -1,5 +1,5 @@
 <template>
-    <list   :class="wrapClasses" :size="size" ref="dataGrid" :height="height" :url="url" :border="border" :columns="columns"
+    <SmartTable   :class="wrapClasses" :size="size" ref="dataGrid" :height="height" :url="url" :border="border" :columns="columns"
              :pagination="pagination" :queryParams="queryParams"
              @on-selection-change="onSelectionChange"
              @on-load-success="onLoadSuccess"
@@ -7,7 +7,7 @@
         <div slot="header" v-if="(!!searchFields && searchFields.length>0) || (buttons && buttons.length>0)">
             <i-form class="search-form" inline>
                 <Form-item>
-                    <i-button v-for="(button, index) in buttons" :key="button.textta" :icon="button.icon" :type="button.type" :disabled="!!button.disabled" @click="buttonEvent(button,$event)">{{button.text}}</i-button>
+                    <i-button v-for="(button, index) in buttons" :key="button.text" :icon="button.icon" :type="button.type" :disabled="!!button.disabled" @click="buttonEvent(button,$event)">{{button.text}}</i-button>
                 </Form-item>
                 <Form-item>
                     <i-input v-model="dataValue" @on-enter="handleSubmit('table')" style="width:250px;">
@@ -19,20 +19,18 @@
                 </Form-item>
             </i-form>
         </div>
-    </list>
+    </SmartTable>
 </template>
 <script>
-    import list from '../table';
+    import SmartTable from '../table';
     import ICol from '../grid/col';
     import { getParameterNames } from '../../utils/assist';
     const prefixCls = 'ivu-datagrid';
 
     export default {
-        name: 'DataGrid',
         components: {
-            list,
-            ICol
-
+            ICol,
+            SmartTable
         },
         props: {
             columns: {
@@ -58,7 +56,7 @@
             }
             , queryParams: {
                 type: Object,
-                default(){
+                default() {
                     return {};
                 }
             }

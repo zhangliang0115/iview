@@ -1,4 +1,5 @@
 import Vue from 'vue';
+let $=Vue.prototype.$;
 const isServer = Vue.prototype.$isServer;
 // 判断参数是否是其中之一
 export function oneOf (value, validList) {
@@ -310,9 +311,44 @@ export function getParameterNames (fn) {
         : result;
 }
 
-export function isEmptyObject (e) {
-    var t;
-    for (t in e)
-        return !1;
-    return !0;
+function toParam(obj){
+    var str="";
+    $.each(obj,function(i,j){
+        if(typeof j=="object" && $.isArray(j)){
+            $.each(j,function(m,n){
+                if(typeof n=="object"){
+                    $.each(n,function(k,v){
+                        if(!!str){
+                            str=str+"&"+i+"["+m+"]."+k+"="+v;
+                        }else{
+                            str=i+"["+m+"]."+k+"="+v;
+                        }
+                    })
+                }else{
+                    if(!!str){
+                        str=str+"&"+i+"["+m+"]="+n;
+                    }else{
+                        str=i+"["+m+"]="+n;
+                    }
+                }
+            });
+        }else if(typeof j=="object"){
+            $.each(j,function(m,n){
+                if(!!str){
+                    str=str+"&"+i+"."+m+"="+n;
+                }else{
+                    str=i+"."+m+"="+n;
+                }
+            });
+
+        }else{
+            if(!!str){
+                str=str+"&"+i+"="+j;
+            }else{
+                str=i+"="+j;
+            }
+        }
+
+    });
+    return str;
 }

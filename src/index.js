@@ -46,7 +46,9 @@ import { Row, Col } from './components/grid';
 import { Select, Option, OptionGroup } from './components/select';
 import locale from './locale';
 
-import DataGrid from './components/data-grid';
+import SmartTable from './components/smart-table';
+import UmEditor from './components/um-editor';
+import $ from 'jquery';
 
 const iview = {
     Affix,
@@ -120,9 +122,10 @@ const iview = {
     Transfer,
     Tree,
     Upload,
-    DataGrid
+    SmartTable,
+    UmEditor
 };
-
+const baseURL='http://127.0.0.1:1000';
 const install = function (Vue, opts = {}) {
     locale.use(opts.locale);
     locale.i18n(opts.i18n);
@@ -135,6 +138,24 @@ const install = function (Vue, opts = {}) {
     Vue.prototype.$Message = Message;
     Vue.prototype.$Modal = Modal;
     Vue.prototype.$Notice = Notice;
+    //ajax 默认配置
+    $.ajaxSetup( {
+        type: "POST" ,
+        crossDomain:true,
+        abortOnRetry:true
+    } );
+    Vue.prototype.$=$;
+    Vue.prototype.ajax=$.ajax;
+    Vue.prototype.currentRequests = {};
+    $.ajaxPrefilter( function(options, originalOptions, jqXHR){
+        if ( options.abortOnRetry ) {
+            if (Vue.prototype.currentRequests[ options.url ] ) {
+                Vue.prototype.currentRequests[ options.url ].abort();
+            }
+            Vue.prototype.currentRequests[ options.url ] = jqXHR;
+        }
+        options.url = baseURL+options.url;
+    });
 };
 
 // auto install

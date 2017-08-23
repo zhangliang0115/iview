@@ -59,13 +59,11 @@
             load:function () {
                 if(this.url){
                     var vm = this;
-                    $.ajax({
+                    this.ajax({
                         url:vm.url,
-                        success:function(rs){
-                            if(rs.data){
-                                vm.data=rs.data;
-                                vm.$emit('on-load-success', vm.data);
-                            }
+                        success:function(data){
+                            vm.data=data;
+                            vm.$emit('on-load-success', vm.data);
                         }
                     });
                 }
