@@ -41,7 +41,7 @@
     }
 
     export default {
-        name: 'FormItem',
+        name: 'SmartFormItem',
         mixins: [ Emitter ],
         props: {
             label: {

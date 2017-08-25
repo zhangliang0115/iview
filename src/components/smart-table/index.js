@@ -1,2 +1,2 @@
-import Table from './table.vue';
-export default Table;
+import SmartTable from './table.vue';
+export default SmartTable;

@@ -142,7 +142,7 @@
   let columnKey = 1;
 
   export default {
-      name: 'Table',
+      name: 'SmartTable',
       mixins: [ Locale ],
       components: { tableHead, tableBody },
       props: {

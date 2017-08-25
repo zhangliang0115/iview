@@ -45,7 +45,7 @@
     import Mixin from './mixin';
 
     export default {
-        name: 'TableBody',
+        name: 'SmartTableBody',
         mixins: [ Mixin ],
         components: { Cell, Expand, TableTr },
         props: {

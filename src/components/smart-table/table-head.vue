@@ -64,7 +64,7 @@
     import Locale from '../../mixins/locale';
 
     export default {
-        name: 'TableHead',
+        name: 'SmartTableHead',
         mixins: [ Mixin, Locale ],
         components: { CheckboxGroup, Checkbox, Poptip, iButton, renderHeader },
         props: {

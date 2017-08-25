@@ -1,5 +1,5 @@
-import Form from './form.vue';
-import FormItem from './form-item.vue';
+import SmartForm from './smart-form.vue';
+import SmartFormItem from './smart-form-item.vue';
 
-Form.Item = FormItem;
-export default Form;
+SmartForm.Item = SmartFormItem;
+export default SmartForm;

@@ -8,7 +8,7 @@
     const prefixCls = 'ivu-form';
 
     export default {
-        name: 'iForm',
+        name: 'SmartForm',
         props: {
             model: {
                 type: Object
