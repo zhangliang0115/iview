@@ -55,10 +55,11 @@ li + li { border-left: solid 1px #bbb; padding-left: 10px; margin-left: 10px; }
                 <li><router-link to="/message">Message</router-link></li>
                 <li><router-link to="/notice">Notice</router-link></li>
                 <li><router-link to="/smart-table">smart-table</router-link></li>
+                <li><router-link to="/ueditor">ueditor</router-link></li>
                 <li><router-link to="/umeditor">umeditor</router-link></li>
             </ul>
         </nav>
-        <div style="width:100%;height:500px;overflow-y: hidden">
+        <div style="width:100%;height:500px;">
             <router-view></router-view>
         </div>
     </div>

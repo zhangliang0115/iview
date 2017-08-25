@@ -188,8 +188,12 @@ const router = new VueRouter({
             component: require('./routers/smart-table.vue')
         },
         {
-            path: '/umeditor',
+            path: '/ueditor',
             component: require('./routers/ueditor.vue')
+        },
+        {
+            path: '/umeditor',
+            component: require('./routers/umeditor.vue')
         }
     ]
 });

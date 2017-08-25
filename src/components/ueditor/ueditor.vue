@@ -3,7 +3,7 @@
 </template>
 <script>
     export default {
-        name: 'UmEditor',
+        name: 'UEditor',
         data () {
             return {
                 editor: null
@@ -29,7 +29,7 @@
         },
         mounted() {
             const _this = this;
-            this.editor = UM.getEditor(this.id, this.config); // 初始化UE
+            this.editor = UE.getEditor(this.id, this.config); // 初始化UE
             this.editor.addListener("ready", function () {
                 _this.editor.setContent(_this.value); // 确保UE加载完成后，放入内容。
             });
@@ -47,7 +47,7 @@
                     this.editor.setContent(value);
                 }
             },
-            getContent() { // 获取内容方法
+            getUEContent() { // 获取内容方法
                 return this.editor.getContent()
             }
         },

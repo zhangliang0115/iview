@@ -455,6 +455,14 @@
           }
       },
       methods: {
+          getChecked(){
+              var checked=[];
+              var select=this.getSelection();
+              for(var i in select){
+                  checked.push(select[i].id);
+              }
+              return checked;
+          },
           buttonEvent: function (button,e) {
               var objs={
                   button:button,
@@ -983,11 +991,9 @@
       },
       watch: {
           checkedRow(checked){
-
                 for(let i in this.buttons){
                     let button=this.buttons[i];
                     if(typeof button.use=='function') {
-                        console.log(button.use(checked));
                         this.$set(button,"disabled",button.use(checked)===false);
                     }else if(typeof button.use=='boolean'){
                         this.$set(button,"disabled",use);

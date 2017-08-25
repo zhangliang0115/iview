@@ -47,8 +47,11 @@ import { Select, Option, OptionGroup } from './components/select';
 import locale from './locale';
 
 import SmartTable from './components/smart-table';
-import UmEditor from './components/um-editor';
+
+import Ue from './components/ueditor';
+import Um from './components/um-editor';
 import $ from 'jquery';
+import { toParam } from './utils/assist';
 
 const iview = {
     Affix,
@@ -123,9 +126,10 @@ const iview = {
     Tree,
     Upload,
     SmartTable,
-    UmEditor
+    Ue,
+    Um
 };
-const baseURL='http://127.0.0.1:1000';
+const baseURL='';
 const install = function (Vue, opts = {}) {
     locale.use(opts.locale);
     locale.i18n(opts.i18n);
@@ -144,6 +148,7 @@ const install = function (Vue, opts = {}) {
         crossDomain:true,
         abortOnRetry:true
     } );
+    Vue.prototype.toParam=toParam;
     Vue.prototype.$=$;
     Vue.prototype.ajax=$.ajax;
     Vue.prototype.currentRequests = {};

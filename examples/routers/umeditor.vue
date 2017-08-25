@@ -19,7 +19,7 @@
     }
 </style>
 <script>
-    import UE from '../../src/components/ueditor';
+    import UE from '../../src/components/um-editor';
     import Input from "../../src/components/input/input";
     export default {
         components: {
