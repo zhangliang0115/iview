@@ -49,7 +49,7 @@ import locale from './locale';
 import SmartTable from './components/smart-table';
 import Ue from './components/ueditor';
 import Um from './components/um-editor';
-import Layout from './components/layout-test';
+import Layout from './components/layout';
 import $ from 'jquery';
 import { toParam } from './utils/assist';
 

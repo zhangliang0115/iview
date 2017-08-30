@@ -1,13 +1,27 @@
+<style scoped>
+    .ivu-layout {
+        position: relative;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        z-index: 0;
+    }
+
+</style>
 <template>
-    <div class="ivu-layout" :style="wrapStyle" ><slot></slot></div>
+    <div :class="classes" :style="styles" ><slot></slot></div>
 </template>
 <script>
+
+    import { getStyle,findComponentsDownward } from '../../utils/assist';
+    import { on } from '../../utils/dom';
+
+    const prefixCls = 'ivu-layout';
+
     export default {
         name: 'Layout',
         created: function () {
-            this.$nextTick(function () {//DOM更新了
-                this.calcWidth();
-            })
+
         },
         props: {
             full: {
@@ -17,45 +31,43 @@
             border: {
                 type: Boolean,
                 default: false
-            },
-            width:{
-                type:Number
-            },
-            height:{
-                type:Number
+            },id:{
+                type:String
             }
         },
-        data () {
+        data(){
             return {
-                real_width: '',
-                real_height:"",
-                top_height:0,
-                left_width:0,
-            };
+                width:'',
+                height:'',
+                container:{
+                    north:{height:0},west:{width:0},center:{},south:{height:0},east:{width:0}
+                }
+            }
+        },
+        mounted(){
+            this.handleResize();
+            on(window, 'resize', this.handleResize);
+
         },
         computed: {
-            wrapStyle () {
-                var style={
-                    width:this.real_width+"px",
-                    height:this.real_height+"px"
-                };
-                if(this.border){
-                    style.border="1px #dddee1 solid";
+            classes () {
+                return [
+                    `${prefixCls}`
+                ];
+            },
+            styles(){
+                return {
+                    height:`${this.height}px`
                 }
-                return style;
             }
         },
         methods: {
-            calcWidth: function () {
-                this.$nextTick(function () {
-                    this.real_width = this.width||(this.$el.parentNode.tagName=='BODY'?document.documentElement.clientWidth:this.$el.parentNode.clientWidth);
-                    this.real_height = this.height||(this.$el.parentNode.tagName=='BODY'?document.documentElement.clientHeight:this.$el.parentNode.clientHeight);
-                    if(this.border) {
-                        this.real_width=this.real_width-2;
-                        this.real_height= this.real_height-2;
-                    }
-
-                })
+            handleResize(){
+                this.$nextTick(() => {
+                    this.width=parseInt(getStyle(this.$el, 'width'));
+                    this.height=parseInt(getStyle(this.$el, 'height'))||document.documentElement.clientHeight;
+                    findComponentsDownward(this, 'Layout').forEach(node => node.handleResize());
+                });
             }
         }
     };

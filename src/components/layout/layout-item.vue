@@ -1,41 +1,32 @@
 <style scoped>
-    .ivu-layout-left .ivu-menu-vertical.ivu-menu-light:after{
-        content:none;
+    .ivu-layout-panel {
+        position: absolute;
+        overflow: hidden;
     }
-    .ivu-layout-top{
-        /*position: fixed;*/
-        background-color: #2b83f9;
-        background-image: linear-gradient(143deg,#2945cb 20%,#2b83f9 81%,#3a9dff);
-        top:0;
-        left:0;
-        width: 100%;
+    .ivu-layout-panel-east,.ivu-layout-panel-west {
         z-index: 2;
-        color: #fff;
-        font-size:14px;
     }
-    .ivu-layout-left{
-        float: left;
-        display: inline-block;
-        z-index: 1;
-        /*position: fixed;*/
-        left:0;
-        border-right: 1px #A1A1A1 solid;
-        overflow-y: overlay;
+    .ivu-layout-panel-north,.ivu-layout-panel-south {
+        z-index: 3;
     }
-    .ivu-layout-center{
-        float: left;
-        /*position: fixed;*/
-    }
+    .ivu-layout-panel-west{border-right: solid 1px #D4D4D4}
+    /*.ivu-layout-panel-south{background: rgb(169, 250, 205);}*/
 </style>
 <template>
-    <div :class="wrapClass" :style="wrapStyle" ><slot></slot></div>
+    <div :class="classes" :style="styles" ><slot></slot></div>
 </template>
 <script>
+    import { oneOf } from '../../utils/assist';
+
+    const prefixCls = 'ivu-layout-panel';
+
     export default {
         name: 'LayoutItem',
         props: {
-            position: {
-                type: String
+            region: {
+                validator (value) {
+                    return oneOf(value, ['north', 'south', 'east', 'west', 'center']);
+                }
             },
             height: {
                 type: Number
@@ -44,33 +35,102 @@
                 type: Number
             }
         },
+        data(){
+            return {
+                container:{
+                    width:'',
+                    height:''
+                }
+            }
+        },
+        watch:{
+            height(){
+                switch (this.region){
+                    case 'north':
+                        this.layout.container.north.height=this.height;
+                        break;
+                    case 'south':
+                        this.layout.container.south.height=this.height;
+                        break;
+                }
+            },
+            width(){
+                switch (this.region){
+                    case 'west':
+                        this.layout.container.west.width=this.width;
+                        break;
+                    case 'east':
+                        this.layout.container.east.width=this.width;
+                        break;
+                    case 'center':
+                        break;
+                }
+            }
+        },
+        mounted(){
+            this.$nextTick(()=>{
+                switch (this.region){
+                    case 'north':
+                        this.layout.container.north.height=this.height;
+                        break;
+                    case 'south':
+                        this.layout.container.south.height=this.height;
+                        break;
+                    case 'west':
+                        this.layout.container.west.width=this.width;
+                        break;
+                    case 'east':
+                        this.layout.container.east.width=this.width;
+                        break;
+                    case 'center':
+                        break;
+                }
+            });
+
+
+        },
         computed: {
-            wrapStyle: function () {
-                if(this.position=="top"){
-                    this.layout.top_height=this.height||50;
+            classes: function () {
+                return [
+                    `${prefixCls}`,`${prefixCls}-${this.region}`
+                ];
+            },
+            styles: function () {
+                if(this.region=='north'){
                     return {
-                        height: this.layout.top_height + "px",
-                        "line-height":this.layout.top_height+"px"
+                        width:`${this.layout.width}px`,
+                        left:0,top:0,height:`${this.height}px`
                     }
-                }else if(this.position=="left"){
-                    this.layout.left_width=this.width||200;
+                }if(this.region=='south'){
                     return {
-                        width: this.layout.left_width + "px",
-                        height:this.layout.real_height-this.layout.top_height+"px",
-                        top:this.layout.top_height+"px"
+                        width:`${this.layout.width}px`,
+                        left:0,
+                        top:(this.layout.height-this.height)+'px',
+                        height:`${this.height}px`
                     }
-                }else if(this.position=="center"){
+                }if(this.region=='west'){
                     return {
-                        width:this.layout.real_width-this.layout.left_width+"px",
-                        height:this.layout.real_height-this.layout.top_height+"px",
-                        top:this.layout.top_height+"px",
-                        left:this.layout.left_width+"px"
+                        width:`${this.width}px`,
+                        left:0,
+                        top:(this.layout.container.north.height)+'px',
+                        height:(this.layout.height-this.layout.container.north.height-this.layout.container.south.height)+'px'
+                    }
+                }if(this.region=='east'){
+                    return {
+                        width:`${this.width}px`,
+                        left:(this.layout.width-this.width)+'px',
+                        top:(this.layout.container.north.height)+'px',
+                        height:(this.layout.height-this.layout.container.north.height-this.layout.container.south.height)+'px'
+                    }
+                }if(this.region=='center'){
+                    return {
+                        width:(this.layout.width-this.layout.container.west.width-this.layout.container.east.width)+'px',
+                        left:(this.layout.container.west.width)+'px',
+                        top:(this.layout.container.north.height)+'px',
+                        height:(this.layout.height-this.layout.container.north.height-this.layout.container.south.height)+'px'
                     }
                 }
 
-            },
-            wrapClass: function () {
-                return "ivu-layout-" + this.position
             },
             layout: function () {
                 var parent = this.$parent;
@@ -81,15 +141,7 @@
             }
         },
         methods: {
-            calcWidth: function () {
-                this.real_width = this.width||document.documentElement.clientWidth;
-                this.real_height = this.height||document.documentElement.clientHeight
-                if(this.border) {
-                    this.real_width=this.real_width-2;
-                    this.real_height= this.real_height-2;
-                }
 
-            }
         }
     };
 </script>
