@@ -10,7 +10,8 @@
         z-index: 3;
     }
     .ivu-layout-panel-west{border-right: solid 1px #D4D4D4}
-    /*.ivu-layout-panel-south{background: rgb(169, 250, 205);}*/
+    .ivu-layout-panel-north{border-bottom: solid 1px #D4D4D4}
+    .ivu-layout-panel-south{border-top: solid 1px #D4D4D4}
 </style>
 <template>
     <div :class="classes" :style="styles" ><slot></slot></div>
