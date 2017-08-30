@@ -7,6 +7,7 @@
             :textField="textField"
             visible
             :multiple="multiple"
+            :showRight="showRight"
             :show-checkbox="showCheckbox">
         </Tree-node>
         <div :class="[prefixCls + '-empty']" v-if="!data.length">{{ localeEmptyText }}</div>
@@ -45,16 +46,24 @@
             emptyText: {
                 type: String
             }
+            , remoting: {
+                type: Boolean,
+                default:false
+            }
             , url: {
                 type: String
             }
             ,textField: {
                 type: String,
                 default: 'title'
+            },showRight:{
+                type: Boolean,
+                default: false
             }
         },
         data () {
             return {
+                loaded:false,
                 prefixCls: prefixCls
             };
         },
@@ -63,6 +72,12 @@
         },
         computed: {
             localeEmptyText () {
+                if(this.remoting){
+                    return 'Loading...';
+                }else
+                if(!!this.url && !this.loaded){
+                    return 'Loading...';
+                }else
                 if (this.emptyText === undefined) {
                     return this.t('i.tree.emptyText');
                 } else {
@@ -74,10 +89,12 @@
             load:function () {
                 if(this.url){
                     var vm = this;
+                    vm.loaded=false;
                     this.ajax({
                         url:vm.url,
                         success:function(data){
                             vm.data=data;
+                            vm.loaded=true;
                             vm.$emit('on-load-success', vm.data);
                         }
                     });
@@ -136,8 +153,9 @@
                 });
                 this.$set(ori, 'selected', true);
             });
-            this.$on('on-selected', () => {
+            this.$on('on-selected', (data) => {
                 this.$emit('on-select-change', this.getSelectedNodes());
+                this.$emit('on-select', data);
             });
             this.$on('checked', () => {
                 this.updateData(false);
@@ -148,9 +166,19 @@
             this.$on('toggle-expand', (payload) => {
                 this.$emit('on-toggle-expand', payload);
             });
+            this.$on('del-node', (data) => {
+                this.$emit('on-del-node', data);
+            });
+            this.$on('add-child', (data) => {
+                this.$emit('on-add-child', data);
+            });
+            this.$on('add-root', () => {
+                this.$emit('on-add-root');
+            });
         },
         watch: {
             data () {
+                return;
                 this.$nextTick(() => {
                     this.updateData();
                     this.broadcast('TreeNode', 'indeterminate');

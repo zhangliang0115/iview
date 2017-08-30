@@ -34,7 +34,7 @@
             return {
                 height:'',
                 data:[],
-                url: '/demo/page',
+                url: 'http://127.0.0.1:1000/demo/page',
                 searchFields:[
                     {field:'module',op:"like_",title:'业务模块'},
                     {field:'operator',op:"like_",title:'操作'}

@@ -13,6 +13,7 @@
     .search-form .search-body{width: 250px;}
     .search-form .ivu-form-item{margin-bottom: 0px;margin-top: 8px;}
     .search-form .search-btn{margin-left: 5px;}
+    .ivu-table-small td{height: 30px;}
 </style>
 <template>
     <div :class="wrapClasses" :style="styles">
@@ -227,12 +228,12 @@
           }
           ,pageSize:{//每页条数(✔)
               type: Number,
-              default:15
+              default:20
           }
           ,pageList:{//每页条数切换的配置(✔)
               type: Array,
               default () {
-                  return [10,15,20,30,40,50];
+                  return [10,20,30,40,50];
               }
           },
           queryParams:{//默认检索条件(✔)
@@ -272,7 +273,7 @@
       },
       data () {
           return {
-              showLoading:true,
+              showLoading:false,
               ready: false,
               tableWidth: 0,
               columnsWidth: {},
@@ -693,7 +694,7 @@
               this.$emit('on-selection-change', selection);
           },
           fixedHeader () {
-              if (this.$parent.height) {
+              if (this.height) {
                   this.$nextTick(() => {
                       const titleHeight = parseInt(getStyle(this.$refs.title, 'height')) || 0;
                       const headerHeight = parseInt(getStyle(this.$refs.header, 'height')) || 0;
@@ -959,7 +960,7 @@
 
       },
       created () {
-          this.load();
+
           if(this.searchFields.length>0){
                 this.searchField=this.searchFields[0].field;
                 for(let i=0;i<this.searchFields.length;i++){
@@ -984,6 +985,18 @@
                   this.fixedHeader();
               }
           });
+          var vm=this;
+          this.bus.$on('layout-resize',function(){
+              setTimeout(()=>{
+                  vm.fixedHeader();
+                  vm.handleResize();
+              },50);
+
+          });
+          setTimeout(()=>{
+              this.load();
+          },50);
+
       },
       beforeDestroy () {
 //            window.removeEventListener('resize', this.handleResize, false);
@@ -996,7 +1009,7 @@
                     if(typeof button.use=='function') {
                         this.$set(button,"disabled",button.use(checked)===false);
                     }else if(typeof button.use=='boolean'){
-                        this.$set(button,"disabled",use);
+                        this.$set(button,"disabled",button.use);
                     }else{
                         this.$set(button,"disabled",false);
                     }
@@ -1032,6 +1045,9 @@
                   this.handleResize();
               },
               deep: true
+          },
+          width(){
+              this.handleResize();
           },
           height () {
               this.fixedHeader();

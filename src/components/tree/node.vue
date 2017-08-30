@@ -1,3 +1,8 @@
+<style>
+    .tree-contextmenu{width:100%}
+    .tree-contextmenu .ivu-btn{text-align: left}
+    .ivu-tree .ivu-poptip-body{padding:0;}
+</style>
 <template>
     <collapse-transition>
         <ul :class="classes" v-show="visible">
@@ -11,14 +16,32 @@
                         :indeterminate="indeterminate"
                         :disabled="data.disabled || data.disableCheckbox"
                         @click.native.prevent="handleCheck"></Checkbox>
+                <Poptip v-show="showRight" trigger="right"   placement="right"   >
+                            <Button-group vertical slot="content" class="tree-contextmenu">
+                                <Button type="ghost" @click="addRoot">
+                                    <Icon type="plus-circled" color="#2d8cf0" size="14"/>
+                                    添加根节点
+                                </Button>
+                                <Button type="ghost" @click="addChild">
+                                    <Icon type="plus-circled" color="#2d8cf0" size="14"/>
+                                    添加子节点
+                                </Button>
+                                <Button type="ghost" @click="del" >
+                                    <Icon type="close-circled" color="red" size="14"/>
+                                    删除
+                                </Button>
+                            </Button-group>
                 <span :class="titleClasses" v-html="data[textField]" @click="handleSelect"></span>
-                <Tree-node
+                </Poptip>
+                <span v-show="!showRight" :class="titleClasses" v-html="data[textField]" @click="handleSelect"></span>
+                    <Tree-node
                         v-for="item in data.children"
                         :key="item.nodeKey"
                         :data="item"
                         :visible="data.expand"
                         :textField="textField"
                         :multiple="multiple"
+                        :showRight="showRight"
                         :show-checkbox="showCheckbox">
                 </Tree-node>
             </li>
@@ -60,12 +83,16 @@
             ,textField: {
                 type: String,
                 default: 'title'
+            },showRight:{
+                type: Boolean,
+                default: false
             }
         },
         data () {
             return {
                 prefixCls: prefixCls,
-                indeterminate: false
+                indeterminate: false,
+                visible:false
             };
         },
         computed: {
@@ -98,15 +125,33 @@
                         [`${prefixCls}-title-selected`]: this.data.selected
                     }
                 ];
+            },
+            titleLiClasses () {
+                return [
+                    `${prefixCls}-title`,
+                    {
+                        [`${prefixCls}-title-selected`]: this.data.selected&&!this.data.children
+                    }
+                ];
             }
         },
         methods: {
+            del(){
+                this.dispatch('Tree', 'del-node',this.data);
+            },
+            addRoot(){
+                this.dispatch('Tree', 'add-root',this.data);
+            },
+            addChild(){
+                this.dispatch('Tree', 'add-child',this.data);
+            },
             handleExpand () {
                 if (this.data.disabled) return;
                 this.$set(this.data, 'expand', !this.data.expand);
                 this.dispatch('Tree', 'toggle-expand', this.data);
             },
             handleSelect () {
+//                this.handleExpand();//自动单击展开/关闭
                 if (this.data.disabled) return;
                 if (this.data.selected) {
                     this.data.selected = false;
@@ -115,7 +160,7 @@
                 } else {
                     this.dispatch('Tree', 'selected', this.data);
                 }
-                this.dispatch('Tree', 'on-selected');
+                this.dispatch('Tree', 'on-selected',this);
             },
             handleCheck () {
                 if (this.disabled) return;

@@ -1,5 +1,5 @@
 import Vue from 'vue';
-let $=Vue.prototype.$;
+import $ from 'jquery';
 const isServer = Vue.prototype.$isServer;
 // 判断参数是否是其中之一
 export function oneOf (value, validList) {
@@ -311,25 +311,33 @@ export function getParameterNames (fn) {
         : result;
 }
 
-function toParam(obj){
+export function toParam(obj){
     var str="";
     $.each(obj,function(i,j){
         if(typeof j=="object" && $.isArray(j)){
             $.each(j,function(m,n){
                 if(typeof n=="object"){
                     $.each(n,function(k,v){
+                        if((!!!v && v!==0) || v==null){
+                            v="";
+                        }
                         if(!!str){
                             str=str+"&"+i+"["+m+"]."+k+"="+v;
                         }else{
                             str=i+"["+m+"]."+k+"="+v;
                         }
+
                     })
                 }else{
-                    if(!!str){
-                        str=str+"&"+i+"["+m+"]="+n;
-                    }else{
-                        str=i+"["+m+"]="+n;
+                    if((!!!n && n!==0) || n==null){
+                        n="";
                     }
+                    if (!!str) {
+                        str = str + "&" + i + "[" + m + "]=" + n;
+                    } else {
+                        str = i + "[" + m + "]=" + n;
+                    }
+
                 }
             });
         }else if(typeof j=="object"){

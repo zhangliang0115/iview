@@ -47,9 +47,9 @@ import { Select, Option, OptionGroup } from './components/select';
 import locale from './locale';
 
 import SmartTable from './components/smart-table';
-
 import Ue from './components/ueditor';
 import Um from './components/um-editor';
+import Layout from './components/layout-test';
 import $ from 'jquery';
 import { toParam } from './utils/assist';
 
@@ -127,9 +127,11 @@ const iview = {
     Upload,
     SmartTable,
     Ue,
-    Um
+    Um,
+    Layout,
+    LayoutItem:Layout.Item
 };
-const baseURL='';
+
 const install = function (Vue, opts = {}) {
     locale.use(opts.locale);
     locale.i18n(opts.i18n);
@@ -152,6 +154,7 @@ const install = function (Vue, opts = {}) {
     Vue.prototype.$=$;
     Vue.prototype.ajax=$.ajax;
     Vue.prototype.currentRequests = {};
+    Vue.prototype.bus=new Vue();
     $.ajaxPrefilter( function(options, originalOptions, jqXHR){
         if ( options.abortOnRetry ) {
             if (Vue.prototype.currentRequests[ options.url ] ) {
@@ -159,7 +162,7 @@ const install = function (Vue, opts = {}) {
             }
             Vue.prototype.currentRequests[ options.url ] = jqXHR;
         }
-        options.url = baseURL+options.url;
+        // options.url = baseURL+options.url;
     });
 };
 

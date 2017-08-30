@@ -8,6 +8,7 @@
             :class="[prefixCls + '-rel']"
             ref="reference"
             @click="handleClick"
+            @contextmenu="handleRight($event)"
             @mousedown="handleFocus(false)"
             @mouseup="handleBlur(false)">
             <slot></slot>
@@ -20,6 +21,7 @@
                 v-show="visible"
                 @mouseenter="handleMouseenter"
                 @mouseleave="handleMouseleave"
+
                 :data-transfer="transfer"
                 v-transfer-dom>
                 <div :class="[prefixCls + '-content']">
@@ -63,7 +65,7 @@
         props: {
             trigger: {
                 validator (value) {
-                    return oneOf(value, ['click', 'focus', 'hover']);
+                    return oneOf(value, ['click', 'focus', 'hover','right']);
                 },
                 default: 'click'
             },
@@ -138,6 +140,15 @@
             }
         },
         methods: {
+            handleRight(event){
+                if (this.trigger === 'right') {
+                    event.preventDefault ? event.preventDefault():(event.returnValue = false);
+                    this.handleClose();
+                    this.visible=true;
+                }else{
+                    return false;
+                }
+            },
             handleClick () {
                 if (this.confirm) {
                     this.visible = !this.visible;
@@ -153,7 +164,7 @@
                     this.visible = false;
                     return true;
                 }
-                if (this.trigger !== 'click') {
+                if (this.trigger !== 'click' && this.trigger!=='right') {
                     return false;
                 }
                 this.visible = false;
@@ -180,8 +191,13 @@
                 }, 100);
             },
             handleMouseleave () {
-                if (this.trigger !== 'hover' || this.confirm) {
+                if (!(this.trigger === 'hover' ||this.trigger === 'right' || this.confirm)) {
                     return false;
+                }
+                if(this.trigger === 'right'){
+                    setTimeout(() => {
+                        this.visible = false;
+                    }, 100)
                 }
                 if (this.enterTimer) {
                     clearTimeout(this.enterTimer);
