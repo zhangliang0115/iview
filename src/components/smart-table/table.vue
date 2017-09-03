@@ -530,7 +530,7 @@
                           vm.total=data.total;
                           vm.pageSize=data.size;
                           vm.pageNumber=data.page;
-                          vm.$emit('on-load-success', vm.rows);
+                          vm.$emit('on-load-success', data.rows);
                       }else{
                          vm.$emit('on-load-success', data);
                       }
