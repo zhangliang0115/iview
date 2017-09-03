@@ -65,7 +65,9 @@
             handleResize(){
                 this.$nextTick(() => {
                     this.width=parseInt(getStyle(this.$el, 'width'));
-                    this.height=parseInt(getStyle(this.$el, 'height'))||document.documentElement.clientHeight;
+                    if (this.full) {
+                        this.height=parseInt(getStyle(this.$parent.$el, 'height'))||document.documentElement.clientHeight;
+                    }
                     findComponentsDownward(this, 'Layout').forEach(node => node.handleResize());
                 });
             }

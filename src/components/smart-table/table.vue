@@ -531,28 +531,41 @@
               }
               if(!!this.url){//请求远程数据
                   vm.showLoading=true;
-                  this.ajax({
-                      method:this.method,
-                      url:this.url,
-                      data:params,
-                      success:function(data){
-                          if(vm.pagination){
-                              vm.$parent.data=data.rows;
-                              vm.total=data.total;
-                              vm.pageSize=data.size;
-                              vm.pageNumber=data.page;
-                          }else{
-                              vm.$parent.data=data;
-                          }
-                          vm.$emit('on-load-success', vm.data);
-                          vm.showLoading=false;
-                          vm.isFirstLoadReMoteData=false;
-                      },
-                      error:function () {
-                          vm.showLoading=false;
-                          vm.isFirstLoadReMoteData=false;
+                  this.ajax(this.url,params).then(data => {
+                      if(vm.pagination){
+                          vm.data=data.rows;
+                          vm.total=data.total;
+                          vm.pageSize=data.size;
+                          vm.pageNumber=data.page;
+                      }else{
+                          vm.data=data;
                       }
-                  });
+                      vm.$emit('on-load-success', vm.data);
+                      vm.showLoading=false;
+                      vm.isFirstLoadReMoteData=false;
+                  })
+//                  this.ajax({
+//                      method:this.method,
+//                      url:this.url,
+//                      data:params,
+//                      success:function(data){
+//                          if(vm.pagination){
+//                              vm.$parent.data=data.rows;
+//                              vm.total=data.total;
+//                              vm.pageSize=data.size;
+//                              vm.pageNumber=data.page;
+//                          }else{
+//                              vm.$parent.data=data;
+//                          }
+//                          vm.$emit('on-load-success', vm.data);
+//                          vm.showLoading=false;
+//                          vm.isFirstLoadReMoteData=false;
+//                      },
+//                      error:function () {
+//                          vm.showLoading=false;
+//                          vm.isFirstLoadReMoteData=false;
+//                      }
+//                  });
               }else{//本地数据data
 
               }
