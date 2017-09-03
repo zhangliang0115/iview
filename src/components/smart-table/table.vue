@@ -295,18 +295,12 @@
               ,searchField:''
               ,searchValue:''
               ,searchOp:{}
+              ,isFirstLoadReMoteData:!!this.url
           };
       },
       computed: {
           checkedRow(){
               return this.getSelection();
-          },
-          isFirstLoadReMoteData(){
-              if(!!this.url){
-                  return true;
-              }else{
-                  return false;
-              }
           },
           localeNoDataText () {
               if (this.noDataText === undefined) {
