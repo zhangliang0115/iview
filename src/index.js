@@ -144,26 +144,10 @@ const install = function (Vue, opts = {}) {
     Vue.prototype.$Message = Message;
     Vue.prototype.$Modal = Modal;
     Vue.prototype.$Notice = Notice;
-    //ajax 默认配置
-    $.ajaxSetup( {
-        type: "POST" ,
-        crossDomain:true,
-        abortOnRetry:true
-    } );
     Vue.prototype.toParam=toParam;
     Vue.prototype.$=$;
-    Vue.prototype.ajax=$.ajax;
-    Vue.prototype.currentRequests = {};
     Vue.prototype.bus=new Vue();
-    $.ajaxPrefilter( function(options, originalOptions, jqXHR){
-        if ( options.abortOnRetry ) {
-            if (Vue.prototype.currentRequests[ options.url ] ) {
-                Vue.prototype.currentRequests[ options.url ].abort();
-            }
-            Vue.prototype.currentRequests[ options.url ] = jqXHR;
-        }
-        // options.url = baseURL+options.url;
-    });
+
 };
 
 // auto install
