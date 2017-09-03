@@ -1,4 +1,4 @@
-<style>
+<style scoped>
     .demo-spin-icon-load{
         animation: ani-demo-spin 1s linear infinite;
     }
@@ -527,12 +527,12 @@
                   vm.showLoading=true;
                   this.ajax(this.url,params).then(data => {
                       if(vm.pagination){
-                          vm.data=data.rows;
+//                          vm.data=data.rows;
                           vm.total=data.total;
                           vm.pageSize=data.size;
                           vm.pageNumber=data.page;
                       }else{
-                          vm.data=data;
+//                          vm.data=data;
                       }
                       vm.$emit('on-load-success', vm.data);
                       vm.showLoading=false;
