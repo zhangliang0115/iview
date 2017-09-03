@@ -527,14 +527,13 @@
                   vm.showLoading=true;
                   this.ajax(this.url,params).then(data => {
                       if(vm.pagination){
-//                          vm.data=data.rows;
                           vm.total=data.total;
                           vm.pageSize=data.size;
                           vm.pageNumber=data.page;
+                          vm.$emit('on-load-success', vm.rows);
                       }else{
-//                          vm.data=data;
+                         vm.$emit('on-load-success', data);
                       }
-                      vm.$emit('on-load-success', vm.data);
                       vm.showLoading=false;
                       vm.isFirstLoadReMoteData=false;
                   })
