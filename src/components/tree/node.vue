@@ -91,8 +91,7 @@
         data () {
             return {
                 prefixCls: prefixCls,
-                indeterminate: false,
-                visible:false
+                indeterminate: false
             };
         },
         computed: {
