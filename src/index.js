@@ -50,7 +50,6 @@ import SmartTable from './components/smart-table';
 import Ue from './components/ueditor';
 import Um from './components/um-editor';
 import Layout from './components/layout';
-import $ from 'jquery';
 import { toParam } from './utils/assist';
 
 const iview = {
@@ -144,10 +143,6 @@ const install = function (Vue, opts = {}) {
     Vue.prototype.$Message = Message;
     Vue.prototype.$Modal = Modal;
     Vue.prototype.$Notice = Notice;
-    Vue.prototype.toParam=toParam;
-    Vue.prototype.$=$;
-    Vue.prototype.bus=new Vue();
-
 };
 
 // auto install
